@@ -1,0 +1,17 @@
+.login-page {
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background: #D2D0DD;
+}
+
+.login-form {
+
+    width: 27rem;
+}

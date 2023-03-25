@@ -1,0 +1,312 @@
+<p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
+<p-toast></p-toast>
+<app-header></app-header>
+<h5 class="m-2">Manage Request</h5>
+
+<p-table [value]="requestData" class="mt-2" #dt [rows]="10" [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [globalFilterFields]="['Applicant_Name', 'District', 'Gender']" [tableStyle]="{ 'min-width': '50rem' }">
+
+    <ng-template pTemplate="caption">
+        <div class="flex  justify-content-between">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains',dt)"
+                    placeholder="Search..." />
+            </span>
+            <button type="button" class="ml-5" pButton pRipple (click)="displayDateFilterDialog=true"
+                label="Apply Filter"></button>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Applicant ID</th>
+            <th>Applicant Name</th>
+            <th>District</th>
+            <th>Gender</th>
+            <th>GovtID Type</th>
+            <th>Ownership</th>
+            <th>Pincode</th>
+            <th>State</th>
+            <th>View</th>
+            <th>Edit</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-request>
+        <tr>
+            <td>{{request.request_Id}}</td>
+            <td>{{request.Applicant_Name}}</td>
+            <td>{{request.District}}</td>
+            <td>{{request.Gender}}</td>
+            <td>{{request.GovtID_Type}}</td>
+            <td>{{request.Ownership}}</td>
+            <td>{{request.Pincode}}</td>
+            <td>{{request.State}}</td>
+            <td> <p-button icon="pi pi-eye" (click)="onView(request)"
+                    styleClass="p-button-rounded p-button-info p-button-outlined"></p-button>
+            </td>
+            <td><p-button icon="pi pi-pencil" styleClass="p-button-rounded p-button-help p-button-outlined"
+                    (click)="showEditDialog(request)"></p-button>
+            </td>
+
+        </tr>
+    </ng-template>
+</p-table>
+<p-dialog header="Edit Request" [(visible)]="displayEditDialog" [style]="{width: '50vw'}">
+    <form #Form [formGroup]="form" (ngSubmit)="onFormSubmit()">
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>ID Number</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="ID_Number" />
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Applicant Name</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="Applicant_Name" />
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Gender</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="Gender" [style]="{width:'100%'}" placeholder="Select" appendTo="body"
+                    [options]="gender" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>District</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="District" [style]="{width:'100%'}" appendTo="body" placeholder="Select"
+                    [options]="district" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>State</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="State" />
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Pincode</label>
+            </div>
+            <div class="col-6">
+                <p-inputNumber inputId="integeronly" [style]="{width:'100%'}" [useGrouping]="false" [showButtons]="true"
+                    formControlName="Pincode"></p-inputNumber>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Ownership</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="Ownership" appendTo="body" [style]="{width:'100%'}" placeholder="Select"
+                    [options]="ownership" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>GovtID Type</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="GovtID_Type" [style]="{width:'100%'}" appendTo="body" placeholder="Select"
+                    [options]="GovtIDOptions" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Category</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="GovtID_Type" [style]="{width:'100%'}" appendTo="body" placeholder="Select"
+                    [options]="CategoryOptions" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Load Applied</label>
+            </div>
+            <div class="col-6">
+                <p-inputNumber inputId="integeronly" [showButtons]="true" [max]="200" [useGrouping]="false"
+                    [style]="{width:'100%'}" formControlName="Load_Applied"></p-inputNumber>
+            </div>
+            <!-- <small class="text-danger" *ngIf="form.controls['Load_Applied'].errors?.['pattern']">
+                * Load should not be more than 200 KV
+            </small> -->
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Date of Application</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="Date_of_Application" />
+
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Date of Approval</label>
+            </div>
+            <div class="col-6">
+                <p-calendar formControlName="Date_of_Approval" [disabled]="true" [showIcon]="true"
+                    appendTo="body"></p-calendar>
+            </div>
+        </div>
+        <!-- <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Modified Date</label>
+            </div>
+            <div class="col-6">
+                <p-calendar formControlName="Modified_Date" appendTo="body" [showIcon]="true"></p-calendar>
+            </div>
+        </div> -->
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Status</label>
+            </div>
+            <div class="col-6">
+                <p-dropdown formControlName="Status" [style]="{width:'100%'}" appendTo="body" placeholder="Select"
+                    [options]="statusOptions" optionLabel="label"></p-dropdown>
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Reviewer Name</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="Reviewer_Name" />
+            </div>
+        </div>
+        <div class="row col-12 mb-2">
+            <div class="col-6">
+                <label>Reviewer Comments</label>
+            </div>
+            <div class="col-6">
+                <input pInputText type="text" [style]="{width:'100%'}" formControlName="Reviewer_Comments" />
+            </div>
+        </div>
+        <div class='d-flex justify-content-center mt-3'>
+            <p-button type="submit" icon="pi pi-check" label="Submit" [disabled]="form.invalid"></p-button>
+        </div>
+    </form>
+</p-dialog>
+
+<p-dialog header="View Request" [(visible)]="displayViewDialog" [style]="{width: '50vw'}">
+    <p-table [value]="displayRow">
+
+        <ng-template pTemplate="body" let-data>
+            <tr>
+                <td>Request Id</td>
+                <td>{{ data.request_Id || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Applicant Name</td>
+                <td>{{ data.Applicant_Name || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td>{{ data.Status || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Category</td>
+                <td>{{ data.Category || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Date of Application</td>
+                <td>{{(data.Date_of_Application | date: 'MM/dd/yyyy' ) || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Date of Approval</td>
+                <td>{{ (data.Date_of_Approval | date: 'MM/dd/yyyy' ) || "---" }}</td>
+            </tr>
+            <tr>
+                <td>ID Number</td>
+                <td>{{ data.ID_Number || "---" }}</td>
+            </tr>
+
+            <tr>
+                <td>Load Applied</td>
+                <td>{{ data.Load_Applied || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Modified Date</td>
+                <td>{{ data.Modified_Date || "---" }}</td>
+            </tr>
+
+
+
+            <tr>
+                <td>District</td>
+                <td>{{ data.District || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td>{{ data.Gender || "---" }}</td>
+            </tr>
+            <tr>
+                <td>GovtID Type</td>
+                <td>{{ data.GovtID_Type || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Ownership</td>
+                <td>{{ data.Ownership || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Pincode</td>
+                <td>{{ data.Pincode || "---" }}</td>
+            </tr>
+            <tr>
+                <td>State</td>
+                <td>{{ data.State || "---" }}</td>
+            </tr>
+
+            <tr>
+                <td>Reviewer Comments</td>
+                <td>{{ data.Reviewer_Comments || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Reviewer ID</td>
+                <td>{{ data.Reviewer_ID || "---" }}</td>
+            </tr>
+            <tr>
+                <td>Reviewer Name</td>
+                <td>{{ data.Reviewer_Name || "---" }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</p-dialog>
+<p-dialog header="Date Filter(Date of Application) " [(visible)]="displayDateFilterDialog" [style]="{width: '50vw'}">
+    <div class="row col-12 mb-2">
+        <div class="col-6">
+            <label>From</label>
+        </div>
+        <div class="col-6">
+            <p-calendar [(ngModel)]="start_date" [showIcon]="true" appendTo="body"
+                (onSelect)="onDateSelect($event)"></p-calendar>
+        </div>
+    </div>
+    <div class="row col-12 mb-2">
+        <div class="col-6">
+            <label>To</label>
+        </div>
+        <div class="col-6">
+            <p-calendar [(ngModel)]="end_date" [showIcon]="true" appendTo="body" [minDate]="minDate"></p-calendar>
+        </div>
+    </div>
+
+
+    <button type="button" pButton pRipple (click)="onApplyDateFilter()" label="Apply" class="p-button-info"></button>
+    <button type="button" pButton pRipple (click)="onResetDateFilter()" label="Reset"
+        class="p-button-info ml-4"></button>
+</p-dialog>
